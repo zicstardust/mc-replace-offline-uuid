@@ -1,5 +1,4 @@
 import uuid, argparse, os
-#import uuid, argparse, os, shutil
 
 class NULL_NAMESPACE:
     """This garbage is needed to replicate the behavior of the UUID.nameUUIDfromBytes function present in Java."""
@@ -11,23 +10,25 @@ def get_offline_uuid(player: str):
 
 
 def replace_uuid(old_uuid: str, new_uuid: str, path):
-    
-    if not (os.path.exists(path)):
-        print (f"World path not exist: {path}")
-        exit(1)
 
     folders = ["advancements", "playerdata", "stats"]
+    extensions = [".dat", ".dat_old", ".json"]
+
     for folder in folders:
         if not (os.path.exists(f"{path}/{folder}")):
             print (f"folder '{folder}' not found")
             exit(1)
 
-        extensions = [".dat", ".dat_old", ".json"]
-        for extension in extensions:
-            if (os.path.exists(f"{path}/{folder}/{old_uuid}{extension}")):
-                #shutil.copyfile(f"{path}/{folder}/{old_uuid}{extension}", f"{path}/{folder}/{old_uuid}{extension}-backup")
-                os.rename(f"{path}/{folder}/{old_uuid}{extension}", f"{path}/{folder}/{new_uuid}{extension}")
+        for extension in extensions:  
+                
+            old_file_path = f"{path}/{folder}/{old_uuid}{extension}".replace('//', '/')
+            new_file_path = f"{path}/{folder}/{new_uuid}{extension}".replace('//', '/')      
             
+            if (os.path.exists(old_file_path)):
+                print(f"file renamed: {new_file_path}")
+                os.rename(old_file_path, new_file_path)
+            #else:
+            #    print(f"file not found: {old_file_path}")
 
 
 
@@ -42,15 +43,6 @@ if __name__ == '__main__':
     old_uuid = get_offline_uuid(args.old)
     new_uuid = get_offline_uuid(args.new)
     world_path = args.worldpath
-
+    print(f'old name {args.old} - {old_uuid}')
+    print(f'new name {args.new} - {new_uuid}')
     replace_uuid(old_uuid, new_uuid, world_path)
-
-
-
-
-
-
-    #print(f"--old: {args.old}")
-    #print(f"--new: {args.new}")
-    #print(f"--serverpath: {args.serverpath}")
-    #print(f"Dict format: {vars(args)}")
